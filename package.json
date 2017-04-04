@@ -1,0 +1,20 @@
+{
+  "name": "@segment/fault-tolerant-jsonrpc",
+  "version": "1.0.0",
+  "description": "Fault tolerant jsonrpc with retries and timeouts",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && ava"
+  },
+  "dependencies": {
+    "@segment/jsonrpc2": "^0.4.2",
+    "p-retry": "^1.0.0",
+    "p-timeout": "^1.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.18.2",
+    "delay": "^1.3.1",
+    "nock": "^9.0.11",
+    "standard": "^9.0.2"
+  }
+}
