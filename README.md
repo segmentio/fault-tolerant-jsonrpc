@@ -1,4 +1,4 @@
-# fault-tolerant-jsonrpc [![Build Status](https://travis-ci.org/segmentio/fault-tolerant-jsonrpc.svg?branch=master)](https://travis-ci.org/segmentio/fault-tolerant-jsonrpc)
+# fault-tolerant-jsonrpc [![CircleCI](https://circleci.com/gh/segmentio/fault-tolerant-jsonrpc.svg?style=svg&circle-token=9924e7270d858226e8489267037e8d363c6af5ff)](https://circleci.com/gh/segmentio/fault-tolerant-jsonrpc)
 
 > Fault tolerant jsonrpc with retries and timeouts
 
