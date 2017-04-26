@@ -52,8 +52,8 @@ package exposes the same API as [jsonrpc2](https://github.com/segmentio/jsonrpc2
 with the addition of the following options:
 
 - `options.retryOptions` is passed to the [`p-retry`](https://github.com/sindresorhus/p-retry#options) module.
-- `options.timeout` is passed to the [`p-timeout`](https://github.com/sindresorhus/p-timeout) module.
+- `options.totalTimeout` is passed to the [`p-timeout`](https://github.com/sindresorhus/p-timeout) module.
 
 ### `rpc.call(method, params, [options])`
 
-Same API as [jsonrpc2](https://github.com/segmentio/jsonrpc2.js) but global options can be overwritten on a per request basis.
+Same API as the above but global options can be overwritten on a per request basis.
