@@ -1,24 +1,47 @@
 const jsonrpc = require('./')
 
+// This is an example service client,
+// implemented using fault-tolerant-jsonrpc
 function Client (addr, opts) {
-  const rpc = jsonrpc(addr, opts)
+  opts = opts || {}
+
+  // We should only allow retries for idempotent requests
+  const idempotentDefaults = Object.assign({
+    retryOptions: { retries: 3 },
+    timeout: 500,
+    totalTimeout: 2000
+  }, opts.idempotentDefaults)
+
+  const rpc = jsonrpc(addr, opts.globalDefaults)
 
   return {
-    getAll (options) {
-      return rpc.call('Items.GetAll', null, options)
+    getAll () {
+      return rpc.call('Items.GetAll', null, idempotentDefaults)
     },
-    getOne (id, options) {
-      return rpc.call('Items.GetOne', id, options)
+    getOne (id) {
+      return rpc.call('Items.GetOne', id, idempotentDefaults)
+    },
+    createOne (data) {
+      // Intentionally not using retries since this
+      // RPC method _could_ result in duplicate writes
+      return rpc.call('Items.CreateOne', data)
     }
   }
 }
 
-const itemService = new Client('http://localhost:3000')
+const itemService = Client('http://localhost:3000')
 
 itemService
   .getAll()
-  .then(items => console.log(items))
+  .then(console.log)
+  .catch(console.log)
 
 itemService
   .getOne('item-1')
-  .then(item => console.log(item))
+  .then(console.log)
+  .catch(console.log)
+
+itemService
+  .createOne({ some: 'thing' })
+  .then(console.log)
+  .catch(console.log)
