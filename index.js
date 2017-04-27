@@ -1,3 +1,5 @@
+'use strict'
+
 const RPC = require('@segment/jsonrpc2')
 const pRetry = require('p-retry')
 const pTimeout = require('p-timeout')
