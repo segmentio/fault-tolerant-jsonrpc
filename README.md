@@ -8,6 +8,11 @@ This module provides fault-tolerance on top of [@segment/jsonrpc2](github.com/se
 - [x] Timeout via [`p-timeout`](https://github.com/sindresorhus/p-timeout)
 - [ ] Circuit Breaking not yet implemented
 
+
+#### Note about retries
+
+Retries are **off by default** and should only be used for idempotent RPC methods.
+
 ## Install
 
 ```
