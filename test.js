@@ -65,11 +65,14 @@ test.serial('retry off by default', async t => {
 })
 
 test.serial('timeout', async t => {
+  const timeout = 10
+  const retries = 100
   let i = 0
+
   nock(HOST)
     .filteringRequestBody(() => '*')
     .post('/rpc', '*')
-    .times(11)
+    .times(retries * 2)
     .socketDelay(100)
     .reply(200, () => {
       i++
@@ -78,20 +81,23 @@ test.serial('timeout', async t => {
 
   const options = {
     retryOptions: {
-      retries: 10,
+      retries,
       factor: 1,
-      minTimeout: 15,
-      maxTimeout: 15
+      minTimeout: timeout,
+      maxTimeout: timeout
     },
-    timeout: 10
+    timeout: timeout - 5,
+    totalTimeout: 10000
   }
 
   const start = Date.now()
   const error = await t.throws(rpc.call('Items.GetTimeout', null, options))
   const duration = Date.now() - start
+  const expectedDuration = (timeout + 3) * retries
 
-  t.truthy(duration < 210 && duration > 190)
-  t.is(i, 11)
+  t.truthy(duration > expectedDuration * 0.85)
+  t.truthy(duration < expectedDuration * 1.15)
+  t.is(i, retries + 1)
   t.is(error.message, 'ESOCKETTIMEDOUT')
 })
 
