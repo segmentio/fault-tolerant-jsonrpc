@@ -36,7 +36,11 @@ function Client (addr, opts) {
         if (hasTimedOut) {
           return pRetry.AbortError
         }
-        return call(method, params, options)
+
+        return call(method, params, {
+          timeout: options.timeout,
+          async: options.async
+        })
       }
 
       pTimeout(pRetry(run, retryOptions), totalTimeout)
