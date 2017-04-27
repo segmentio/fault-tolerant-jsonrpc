@@ -4,6 +4,8 @@ const RPC = require('@segment/jsonrpc2')
 const pRetry = require('p-retry')
 const pTimeout = require('p-timeout')
 
+const noRetryDefault = { retries: 0 }
+
 module.exports = Client
 
 function Client (addr, opts) {
@@ -22,8 +24,9 @@ function Client (addr, opts) {
   rpc.call = function (method, params, options) {
     options = options || {}
 
-    // Allow overriding options at the individual request level
-    const retryOptions = Object.assign({}, opts.retryOptions, options.retryOptions)
+    // Allow overriding options at the individual request level.
+    // Retries are opt-in and turned off by default.
+    const retryOptions = Object.assign({}, noRetryDefault, opts.retryOptions, options.retryOptions)
     const totalTimeout = options.totalTimeout || opts.totalTimeout || 1000
 
     return new Promise((resolve, reject) => {
