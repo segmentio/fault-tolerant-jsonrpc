@@ -1,13 +1,13 @@
 
 import test from 'ava'
-import delay from 'delay'
 import nock from 'nock'
 import jsonrpc from './'
 
-const rpc = jsonrpc('http://test.rpc/rpc')
+const HOST = 'http://test.rpc'
+const rpc = jsonrpc(`${HOST}/rpc`)
 
 test.serial('success', async t => {
-  nock('http://test.rpc')
+  nock(HOST)
     .post('/rpc', {
       method: 'Items.GetOne',
       params: [1],
@@ -26,7 +26,7 @@ test.serial('success', async t => {
 
 test.serial('retry', async t => {
   let i = 0
-  nock('http://test.rpc')
+  nock(HOST)
     .filteringRequestBody(() => '*')
     .post('/rpc', '*')
     .times(3)
@@ -48,29 +48,80 @@ test.serial('retry', async t => {
   t.is(error.message, 'failed')
 })
 
-test.serial('timeout', async t => {
+test.serial('retry off by default', async t => {
   let i = 0
-  nock('http://test.rpc')
+  nock(HOST)
     .filteringRequestBody(() => '*')
     .post('/rpc', '*')
-    .times(10)
     .reply(200, () => {
       i++
       return { error: 'failed' }
     })
 
+  const error = await t.throws(rpc.call('Items.GetAll'))
+
+  t.is(i, 1)
+  t.is(error.message, 'failed')
+})
+
+test.serial('timeout', async t => {
+  let i = 0
+  nock(HOST)
+    .filteringRequestBody(() => '*')
+    .post('/rpc', '*')
+    .times(11)
+    .socketDelay(100)
+    .reply(200, () => {
+      i++
+      return { result: { el: 'duderino' } }
+    })
+
   const options = {
     retryOptions: {
       retries: 10,
-      minTimeout: 10
+      factor: 1,
+      minTimeout: 15,
+      maxTimeout: 15
     },
-    timeout: 200
+    timeout: 10
   }
 
-  const error = await t.throws(rpc.call('Items.GetAll', null, options))
+  const start = Date.now()
+  const error = await t.throws(rpc.call('Items.GetTimeout', null, options))
+  const duration = Date.now() - start
 
-  await delay(200)
+  t.truthy(duration < 210 && duration > 190)
+  t.is(i, 11)
+  t.is(error.message, 'ESOCKETTIMEDOUT')
+})
 
-  t.is(i, 5)
+test.serial('totalTimeout', async t => {
+  nock(HOST)
+    .filteringRequestBody(() => '*')
+    .post('/rpc', '*')
+    .times(10)
+    .socketDelay(100)
+    .reply(200, {
+      result: {
+        el: 'duderino'
+      }
+    })
+
+  const options = {
+    retryOptions: {
+      retries: 20,
+      factor: 1,
+      minTimeout: 15,
+      maxTimeout: 15
+    },
+    timeout: 10,
+    totalTimeout: 100
+  }
+
+  const start = Date.now()
+  const error = await t.throws(rpc.call('Items.GetTotalTimeout', null, options))
+  const duration = Date.now() - start
+
+  t.truthy(duration < 110 && duration > 90)
   t.truthy(error.message.match(/timed out/))
 })
