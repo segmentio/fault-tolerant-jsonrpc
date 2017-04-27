@@ -1,6 +1,6 @@
 {
   "name": "@segment/fault-tolerant-jsonrpc",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Fault tolerant jsonrpc with retries and timeouts",
   "main": "index.js",
   "scripts": {
