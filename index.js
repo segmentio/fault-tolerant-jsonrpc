@@ -6,21 +6,22 @@ const pTimeout = require('p-timeout')
 const RPCTimeoutError = require('./lib/rpc_timeout_error')
 
 const noRetryDefault = { retries: 0 }
+const defaultRetryPredicate = () => true
 
 module.exports = Client
 module.exports.RPCTimeoutError = RPCTimeoutError
 
-function Client (addr, opts) {
-  if (!(this instanceof Client)) return new Client(addr, opts)
+function Client (addr, libraryOptions) {
+  if (!(this instanceof Client)) return new Client(addr, libraryOptions)
 
-  opts = opts || {}
+  libraryOptions = libraryOptions || {}
 
-  const rpcOptions = {
-    timeout: opts.timeout,
-    logger: opts.logger
+  const originalRpcClientOptions = {
+    timeout: libraryOptions.timeout,
+    logger: libraryOptions.logger
   }
 
-  const rpc = new RPC(addr, rpcOptions)
+  const rpc = new RPC(addr, originalRpcClientOptions)
   const call = rpc.call.bind(rpc)
 
   rpc.call = function (method, params, options) {
@@ -28,8 +29,13 @@ function Client (addr, opts) {
 
     // Allow overriding options at the individual request level.
     // Retries are opt-in and turned off by default.
-    const retryOptions = Object.assign({}, noRetryDefault, opts.retryOptions, options.retryOptions)
-    const totalTimeout = options.totalTimeout || opts.totalTimeout || 1000
+    const retryOptions = Object.assign({}, noRetryDefault, libraryOptions.retryOptions, options.retryOptions)
+    const totalTimeout = options.totalTimeout || libraryOptions.totalTimeout || 1000
+
+    // Decides whether or not we should retry a given request.
+    // The client can decide if they want to retry 404s, or just other types
+    // of errors such as ECONNREFUSED, ESOCKETTIMEDOUT and other common network errors
+    const retryCondition = libraryOptions.retryCondition || options.retryCondition || defaultRetryPredicate
 
     return new Promise((resolve, reject) => {
       let hasTimedOut = false
@@ -45,7 +51,17 @@ function Client (addr, opts) {
         return call(method, params, {
           timeout: options.timeout,
           async: options.async
-        })
+        }).catch(shouldRetry)
+      }
+
+      function shouldRetry (err) {
+        if (retryCondition(err)) {
+          // Keep retrying
+          return Promise.reject(err)
+        } else {
+          // Abort retry flow
+          throw new pRetry.AbortError(err)
+        }
       }
 
       function fallback () {

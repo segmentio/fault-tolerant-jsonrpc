@@ -64,6 +64,39 @@ test.serial('retry off by default', async t => {
   t.is(error.message, 'failed')
 })
 
+test.serial('custom retry logic', async t => {
+  let i = 0
+  nock(HOST)
+    .filteringRequestBody(() => '*')
+    .post('/rpc', '*')
+    .times(2)
+    .reply(500, () => {
+      i++
+      if (i === 2) {
+        return { error: 'application_error' }
+      }
+      return { error: 'network_error' }
+    })
+
+  const options = {
+    retryOptions: {
+      retries: 2
+    },
+    retryCondition: function (err) {
+      if (err.message === 'application_error') {
+        return false
+      }
+      return true
+    },
+    totalTimeout: 100000
+  }
+
+  const error = await t.throws(rpc.call('Items.GetAll', null, options))
+
+  t.is(i, 2)
+  t.is(error.message, 'application_error')
+})
+
 test.serial('timeout', async t => {
   const timeout = 10
   const retries = 100
