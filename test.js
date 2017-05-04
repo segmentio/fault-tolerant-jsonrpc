@@ -1,7 +1,7 @@
 
 import test from 'ava'
 import nock from 'nock'
-import jsonrpc from './'
+import jsonrpc, { RPCTimeoutError } from './'
 
 const HOST = 'http://test.rpc'
 const rpc = jsonrpc(`${HOST}/rpc`)
@@ -129,5 +129,6 @@ test.serial('totalTimeout', async t => {
   const duration = Date.now() - start
 
   t.truthy(duration < 110 && duration > 90)
-  t.truthy(error.message.match(/timed out/))
+  t.truthy(error.message.match(/RPC Client Timed out after \d* attempts/))
+  t.truthy(error instanceof RPCTimeoutError)
 })
