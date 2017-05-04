@@ -6,6 +6,7 @@ This module provides fault-tolerance on top of [@segment/jsonrpc2](github.com/se
 
 - [x] Retries via [`p-retry`](https://github.com/sindresorhus/p-retry)
 - [x] Timeout via [`p-timeout`](https://github.com/sindresorhus/p-timeout)
+- [x] Optional retry logic
 - [ ] Circuit Breaking not yet implemented
 
 
@@ -32,6 +33,16 @@ function Client (addr, opts) {
   // We should only allow retries for idempotent requests
   const idempotentDefaults = Object.assign({
     retryOptions: { retries: 3 },
+
+    // Custom retry function
+    // This allows the clients to decide what sorts of errors
+    // are worth retrying
+    shouldRetry: function(originalError) {
+      if (originalError.code === "SYSTEM_ERROR") {
+        return true
+      }
+      return false
+    }
     timeout: 500,
     totalTimeout: 2000
   }, opts.idempotentDefaults)
