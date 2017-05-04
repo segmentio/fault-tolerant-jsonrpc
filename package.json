@@ -4,7 +4,7 @@
   "description": "Fault tolerant jsonrpc with retries and timeouts",
   "main": "index.js",
   "scripts": {
-    "test": "standard && ava"
+    "test": "standard --fix && ava"
   },
   "dependencies": {
     "@segment/jsonrpc2": "^0.4.2",
