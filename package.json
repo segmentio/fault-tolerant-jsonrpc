@@ -1,6 +1,6 @@
 {
   "name": "@segment/fault-tolerant-jsonrpc",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Fault tolerant jsonrpc with retries and timeouts",
   "license": "MIT",
   "repository": "segmentio/fault-tolerant-jsonrpc",
