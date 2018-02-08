@@ -2,7 +2,14 @@
   "name": "@segment/fault-tolerant-jsonrpc",
   "version": "1.3.0",
   "description": "Fault tolerant jsonrpc with retries and timeouts",
+  "license": "MIT",
+  "repository": "segmentio/fault-tolerant-jsonrpc",
   "main": "index.js",
+  "author": {
+    "name": "Segment",
+    "email": "friends@segment.com",
+    "url": "segment.com"
+  },
   "scripts": {
     "test": "standard && ava"
   },
