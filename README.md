@@ -2,7 +2,7 @@
 
 > Fault tolerant jsonrpc with retries and timeouts
 
-This module provides fault-tolerance on top of [@segment/jsonrpc2](github.com/segmentio/jsonrpc2.js).
+This module provides fault-tolerance on top of [@segment/jsonrpc2](https://github.com/segmentio/jsonrpc2.js).
 
 - [x] Retries via [`p-retry`](https://github.com/sindresorhus/p-retry)
 - [x] Timeout via [`p-timeout`](https://github.com/sindresorhus/p-timeout)
