@@ -42,7 +42,7 @@ function Client (addr, opts) {
         return true
       }
       return false
-    }
+    },
     timeout: 500,
     totalTimeout: 2000
   }, opts.idempotentDefaults)
