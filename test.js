@@ -24,6 +24,24 @@ test.serial('success', async t => {
   t.deepEqual(result, expected)
 })
 
+test.serial('success (forceArray=false)', async t => {
+  nock(HOST)
+    .post('/rpc', {
+      method: 'Items.GetOne',
+      params: 1,
+      id: /.+/,
+      jsonrpc: '2.0'
+    })
+    .reply(200, {
+      result: { key: 'value' }
+    })
+
+  const result = await rpc.call('Items.GetOne', 1, {forceArray: false})
+  const expected = { key: 'value' }
+
+  t.deepEqual(result, expected)
+})
+
 test.serial('retry', async t => {
   let i = 0
   nock(HOST)

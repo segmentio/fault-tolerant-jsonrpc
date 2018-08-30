@@ -14,7 +14,7 @@
     "test": "standard && ava"
   },
   "dependencies": {
-    "@segment/jsonrpc2": "^0.4.2",
+    "@segment/jsonrpc2": "^0.5.0",
     "p-retry": "^1.0.0",
     "p-timeout": "^1.0.0"
   },

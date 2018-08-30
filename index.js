@@ -25,7 +25,8 @@ function Client (addr, libraryOptions) {
   const call = rpc.call.bind(rpc)
 
   rpc.call = function (method, params, options) {
-    options = options || {}
+    // assume forceArray=true by default to stay backwards-compatible
+    options = Object.assign({}, {forceArray: true}, options)
 
     // Allow overriding options at the individual request level.
     // Retries are opt-in and turned off by default.
@@ -50,7 +51,8 @@ function Client (addr, libraryOptions) {
 
         return call(method, params, {
           timeout: options.timeout,
-          async: options.async
+          async: options.async,
+          forceArray: options.forceArray
         }).catch(shouldRetry)
       }
 
