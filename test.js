@@ -128,8 +128,8 @@ test.serial('timeout', async t => {
   const duration = Date.now() - start
   const expectedDuration = (timeout + 3) * retries
 
-  t.truthy(duration > expectedDuration * 0.85)
-  t.truthy(duration < expectedDuration * 1.15)
+  t.truthy(duration > expectedDuration * 0.8)
+  t.truthy(duration < expectedDuration * 1.2)
   t.is(i, retries + 1)
   t.is(error.message, 'ESOCKETTIMEDOUT')
 })
