@@ -1,0 +1,54 @@
+version: 2
+jobs:
+  node6:
+    working_directory: ~/fault-tolerant-jsonrpc
+    docker:
+    - image: node:6
+    steps:
+    - checkout
+    - run: npm config set "//registry.npmjs.org/:_authToken" $NPM_AUTH
+    - run: npm version
+    - run: npm install
+    - run: npm test
+
+  node7:
+    working_directory: ~/fault-tolerant-jsonrpc
+    docker:
+    - image: node:7
+    steps:
+    - checkout
+    - run: npm config set "//registry.npmjs.org/:_authToken" $NPM_AUTH
+    - run: npm version
+    - run: npm install
+    - run: npm test
+
+  node8:
+    working_directory: ~/fault-tolerant-jsonrpc
+    docker:
+    - image: node:8
+    steps:
+    - checkout
+    - run: npm config set "//registry.npmjs.org/:_authToken" $NPM_AUTH
+    - run: npm version
+    - run: npm install
+    - run: npm test
+
+  node10:
+    working_directory: ~/fault-tolerant-jsonrpc
+    docker:
+    - image: node:10
+    steps:
+    - checkout
+    - run: npm config set "//registry.npmjs.org/:_authToken" $NPM_AUTH
+    - run: npm version
+    - run: npm install
+    - run: npm test
+
+workflows:
+  version: 2
+  default:
+    jobs:
+    - node6
+    - node7
+    - node8
+    - node10
