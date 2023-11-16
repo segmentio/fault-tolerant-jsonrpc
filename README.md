@@ -1,5 +1,8 @@
 # fault-tolerant-jsonrpc [![CircleCI](https://circleci.com/gh/segmentio/fault-tolerant-jsonrpc.svg?style=svg&circle-token=9924e7270d858226e8489267037e8d363c6af5ff)](https://circleci.com/gh/segmentio/fault-tolerant-jsonrpc)
 
+> [!NOTE]
+> Segment has paused maintenance on this project, but may return it to an active status in the future. Issues and pull requests from external contributors are not being considered, although internal contributions may appear from time to time. The project remains available under its open source license for anyone to use.
+
 > Fault tolerant jsonrpc with retries and timeouts
 
 This module provides fault-tolerance on top of [@segment/jsonrpc2](github.com/segmentio/jsonrpc2.js).
