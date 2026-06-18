@@ -1,7 +1,9 @@
+'use strict'
 
-import test from 'ava'
-import nock from 'nock'
-import jsonrpc, { RPCTimeoutError } from './'
+const test = require('ava')
+const nock = require('nock')
+const jsonrpc = require('./')
+const { RPCTimeoutError } = require('./')
 
 const HOST = 'http://test.rpc'
 const rpc = jsonrpc(`${HOST}/rpc`)
@@ -42,7 +44,7 @@ test.serial('retry', async t => {
     }
   }
 
-  const error = await t.throws(rpc.call('Items.GetAll', null, options))
+  const error = await t.throwsAsync(rpc.call('Items.GetAll', null, options))
 
   t.is(i, 3)
   t.is(error.message, 'failed')
@@ -58,7 +60,7 @@ test.serial('retry off by default', async t => {
       return { error: 'failed' }
     })
 
-  const error = await t.throws(rpc.call('Items.GetAll'))
+  const error = await t.throwsAsync(rpc.call('Items.GetAll'))
 
   t.is(i, 1)
   t.is(error.message, 'failed')
@@ -91,7 +93,7 @@ test.serial('custom retry logic', async t => {
     totalTimeout: 100000
   }
 
-  const error = await t.throws(rpc.call('Items.GetAll', null, options))
+  const error = await t.throwsAsync(rpc.call('Items.GetAll', null, options))
 
   t.is(i, 2)
   t.is(error.message, 'application_error')
@@ -106,7 +108,7 @@ test.serial('timeout', async t => {
     .filteringRequestBody(() => '*')
     .post('/rpc', '*')
     .times(retries * 2)
-    .socketDelay(100)
+    .delayConnection(100)
     .reply(200, () => {
       i++
       return { result: { el: 'duderino' } }
@@ -124,7 +126,7 @@ test.serial('timeout', async t => {
   }
 
   const start = Date.now()
-  const error = await t.throws(rpc.call('Items.GetTimeout', null, options))
+  const error = await t.throwsAsync(rpc.call('Items.GetTimeout', null, options))
   const duration = Date.now() - start
   const expectedDuration = (timeout + 3) * retries
 
@@ -139,7 +141,7 @@ test.serial('totalTimeout', async t => {
     .filteringRequestBody(() => '*')
     .post('/rpc', '*')
     .times(10)
-    .socketDelay(100)
+    .delayConnection(100)
     .reply(200, {
       result: {
         el: 'duderino'
@@ -158,7 +160,7 @@ test.serial('totalTimeout', async t => {
   }
 
   const start = Date.now()
-  const error = await t.throws(rpc.call('Items.GetTotalTimeout', null, options))
+  const error = await t.throwsAsync(rpc.call('Items.GetTotalTimeout', null, options))
   const duration = Date.now() - start
 
   t.truthy(duration < 110 && duration > 90)
